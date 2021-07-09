@@ -1,0 +1,28 @@
+version: '3.4'
+
+services:
+  testapp:
+    image: ${DOCKER_REGISTRY-}testapp
+    build:
+      context: .
+      dockerfile: TestApp/Dockerfile
+
+  testapp2:
+    image: ${DOCKER_REGISTRY-}testapp2
+    build:
+      context: .
+      dockerfile: TestApp2/Dockerfile
+
+  testapp-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "testapp", "-app-port", "80" ]
+    depends_on:
+      - testapp
+    network_mode: "service:testapp"
+
+  testapp2-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "testapp2", "-app-port", "80" ]
+    depends_on:
+      - testapp2
+    network_mode: "service:testapp2"
